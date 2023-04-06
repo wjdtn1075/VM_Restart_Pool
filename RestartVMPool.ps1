@@ -1,5 +1,6 @@
 Prod by Jeongsoo.Kim@goodus.com
 Updated 2023-04-06
+Version 0.5
 
 ## Importing Module
 Get-Module -Name VMware.VimAutomation.Core
