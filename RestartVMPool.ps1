@@ -1,6 +1,6 @@
 Prod by Jeongsoo.Kim@goodus.com
 Updated 2023-04-06
-Version 0.5
+
 
 ## Importing Module
 Get-Module -Name VMware.VimAutomation.Core
@@ -25,7 +25,9 @@ Write-Host "Import Complete"
 ## Horizon Connection Server info
 $User = "horizonsvc"
 $Password = "VMware1!"
-$poolname = "wind10-Dedi-Auto" " 
+##$poolname = "wind10-Dedi-Auto", "win10-dedi-pool2"
+##$poolname = "wind10-Dedi-Auto", " "  # If you want to restart only one pool, you need to put null (" ") at the poolname variable.
+$poolname = "win10-dedi-pool2", " "
 $Domainadd = "kjs.nsx"
 
 ## vCenter info
@@ -45,12 +47,12 @@ $viConn = Connect-VIServer -Server 'vc01.kjs.nsx' -User $vcuser -Password $vcpas
 Write-Output "Connect to vCenter complete"
 
 ## Get pool info
-$poolinfo =  Get-HVPool -PoolName $poolname | select -expandproperty Base | select-object Name
-#$repool = 
-foreach ($pool in $poolinfo) {
-	Write-Host "Restarting virtual machines in pool $($pool.Name)"
+
+for ($n=0 ; $n -lt $poolname.count ; $n++) {
+	Write-Output "----------------------------------------------------"
+	Write-Output "Restarting virtual machines in pool $($poolname[$n])"
 	#$vmlist = Get-HVDesktop -Pool $pool
-	$vmlist = Get-HVMachine -pool $poolname | select -expandproperty Base | Select Name, BasicState
+	$vmlist = Get-HVMachine -pool $poolname[$n] | select -expandproperty Base | Select Name, BasicState
 	foreach ($vm in $vmlist) {
 	if($vm.BasicState -eq 'PROVISIONING_ERROR' -or`
 	   $vm.BasicState -eq 'ERROR' -or`
@@ -87,3 +89,4 @@ foreach ($pool in $poolinfo) {
 Disconnect-VIServer $viConn -Confirm:$false
 Disconnect-HVServer $connSvr -Confirm:$false
 
+## $pool.
