@@ -23,27 +23,26 @@ Write-Host "Import Complete"
 ## Getting HVDesktop Status (whether it is availabe or unavailabe)
 
 ## Horizon Connection Server info
-$User = "horizonsvc"
-$Password = "VMware1!"
-##$poolname = "wind10-Dedi-Auto", "win10-dedi-pool2"
-##$poolname = "wind10-Dedi-Auto", " "  # If you want to restart only one pool, you need to put null (" ") at the poolname variable.
-$poolname = "win10-dedi-pool2", " "
-$Domainadd = "kjs.nsx"
+$User = "horizon"
+$Password = "Yonsei2020!"
+
+$poolname = "Test_dedi_new_master", " "  ##$poolname = "wind10-Dedi-Auto", " "  # If you want to restart only one pool, you need to put null (" ") at the poolname variable.
+$Domainadd = "yumc.net"
 
 ## vCenter info
 $vcuser = "administrator@vsphere.local"
-$vcpasswd = "VMware1!"
+$vcpasswd = "Yonsei2020!"
 
 ## Connect Horizon Connection Server
 Write-Host "Connect to connection server"
 
-$connSvr = Connect-HVServer -Server 'cs01' -User $User -Password $Password -Domain $Domainadd
+$connSvr = Connect-HVServer -Server '10.10.13.22' -User $User -Password $Password -Domain $Domainadd
 $viewAPI = $connSvr.ExtensionData
 
-## vCenter 접속
+## Connect vCenter Server
 
 Write-Output "Connect to vCenter"
-$viConn = Connect-VIServer -Server 'vc01.kjs.nsx' -User $vcuser -Password $vcpasswd
+$viConn = Connect-VIServer -Server 'ns-vdi-vcenter.yumc.net' -User $vcuser -Password $vcpasswd
 Write-Output "Connect to vCenter complete"
 
 ## Get pool info
@@ -74,7 +73,12 @@ for ($n=0 ; $n -lt $poolname.count ; $n++) {
 	{
 		$msg = [string]::Format("Connected VM   : {0}, Bypass", $vm.Name)
 		Write-Host $msg -Foregroundcolor Gray
-	}	
+	}
+    elseif($vm.BasiState -eq 'DISCONNECTED')
+    {
+        $msg = [string]::Format("Disconnected VM   : {0}, Restart Guest OS", $vm.Name)
+        Write-Host $msg -Foregroundcolor Green
+		Get-VM $vm.Name | Where {$_.PowerState -eq "PoweredOn"} | Restart-VMGuest -Confirm:$false
 	else
 	{
 		$msg = [string]::Format("Available VM   : {0}, Restart Guest OS", $vm.Name)
@@ -85,8 +89,6 @@ for ($n=0 ; $n -lt $poolname.count ; $n++) {
 }
 
 #>
-# 연결 종
+# ?�결 �?
 Disconnect-VIServer $viConn -Confirm:$false
 Disconnect-HVServer $connSvr -Confirm:$false
-
-## $pool.
