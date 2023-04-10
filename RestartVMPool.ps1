@@ -24,14 +24,14 @@ Write-Host "Import Complete"
 
 ## Horizon Connection Server info
 $User = "horizon"
-$Password = "Yonsei2020!"
+$Password = ""
 
 $poolname = "Test_dedi_new_master", " "  ##$poolname = "wind10-Dedi-Auto", " "  # If you want to restart only one pool, you need to put null (" ") at the poolname variable.
-$Domainadd = "yumc.net"
+$Domainadd = ""
 
 ## vCenter info
 $vcuser = "administrator@vsphere.local"
-$vcpasswd = "Yonsei2020!"
+$vcpasswd = ""
 
 ## Connect Horizon Connection Server
 Write-Host "Connect to connection server"
@@ -89,6 +89,6 @@ for ($n=0 ; $n -lt $poolname.count ; $n++) {
 }
 
 #>
-# ?�결 �?
+# ?°ê²° ì¢?
 Disconnect-VIServer $viConn -Confirm:$false
 Disconnect-HVServer $connSvr -Confirm:$false
