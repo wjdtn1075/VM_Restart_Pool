@@ -24,14 +24,14 @@ Write-Host "Import Complete"
 
 ## Horizon Connection Server info
 $User = "horizon"
-$Password = ""
+$Password = "Yonsei2020!"
 
-$poolname = "Test_dedi_new_master", " "  ##$poolname = "wind10-Dedi-Auto", " "  # If you want to restart only one pool, you need to put null (" ") at the poolname variable.
-$Domainadd = ""
+$poolname = "Test_dedi_new_master", "SJ_Test", "SJ_test2"  ##$poolname = "wind10-Dedi-Auto", " "  # If you want to restart only one pool, you need to put null (" ") at the poolname variable.
+$Domainadd = "yumc.net"
 
 ## vCenter info
 $vcuser = "administrator@vsphere.local"
-$vcpasswd = ""
+$vcpasswd = "Yonsei2020!"
 
 ## Connect Horizon Connection Server
 Write-Host "Connect to connection server"
@@ -50,6 +50,7 @@ Write-Output "Connect to vCenter complete"
 for ($n=0 ; $n -lt $poolname.count ; $n++) {
 	Write-Output "----------------------------------------------------"
 	Write-Output "Restarting virtual machines in pool $($poolname[$n])"
+    $REVMEA=0
 	#$vmlist = Get-HVDesktop -Pool $pool
 	$vmlist = Get-HVMachine -pool $poolname[$n] | select -expandproperty Base | Select Name, BasicState
 	foreach ($vm in $vmlist) {
@@ -68,27 +69,36 @@ for ($n=0 ; $n -lt $poolname.count ; $n++) {
 		$msg = [string]::Format("Unavailable VM : {0}, Restart VM - Force", $vm.Name)
 		Write-Host $msg -Foregroundcolor Red
 		Restart-VM -VM $vm.Name -RunAsync -Confirm:$false
+        $REVMEA++
 	}
 	elseif($vm.BasicState -eq 'CONNECTED')
 	{
 		$msg = [string]::Format("Connected VM   : {0}, Bypass", $vm.Name)
 		Write-Host $msg -Foregroundcolor Gray
-	}
-    elseif($vm.BasiState -eq 'DISCONNECTED')
+	}	
+    elseif($vm.BasicState -eq 'DISCONNECTED')
     {
         $msg = [string]::Format("Disconnected VM   : {0}, Restart Guest OS", $vm.Name)
         Write-Host $msg -Foregroundcolor Green
 		Get-VM $vm.Name | Where {$_.PowerState -eq "PoweredOn"} | Restart-VMGuest -Confirm:$false
+        $REVMEA++
+    }
 	else
 	{
 		$msg = [string]::Format("Available VM   : {0}, Restart Guest OS", $vm.Name)
 		Write-Host $msg -Foregroundcolor Green
 		Get-VM $vm.Name | Where {$_.PowerState -eq "PoweredOn"} | Restart-VMGuest -Confirm:$false
+        $REVMEA++
 	}
+
 	}
+    Write-Output "Restarting virtual machines in pool $($poolname[$n]) Ea: $($REVMEA) "
+    $REVMEA=0
 }
 
 #>
-# ?°ê²° ì¢?
+# ?�결 �?
 Disconnect-VIServer $viConn -Confirm:$false
 Disconnect-HVServer $connSvr -Confirm:$false
+
+## $pool.
